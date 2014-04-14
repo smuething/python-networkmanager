@@ -1,0 +1,359 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python API to talk to NetworkManager &mdash; python-networkmanager 0.9.11 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.9.11',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-networkmanager 0.9.11 documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">python-networkmanager 0.9.11 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="python-api-to-talk-to-networkmanager">
+<h1>Python API to talk to NetworkManager<a class="headerlink" href="#python-api-to-talk-to-networkmanager" title="Permalink to this headline">¶</a></h1>
+<p>NetworkManager provides a detailed and capable D-Bus interface on the system
+bus. You can use this interface to query NetworkManager about the overall state
+of the network and details of network devices like current IP addresses or DHCP
+options, and to activate and deactivate network connections.</p>
+<p>python-networkmanager takes this D-Bus interface and wraps D-Bus interfaces in
+classes and D-Bus properties in python properties. It also provides a
+command-line utility to inspect the configuration and (de-)activate
+connections.</p>
+<div class="section" id="module-NetworkManager">
+<span id="the-networkmanager-module"></span><h2>The <a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9.x)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a> module<a class="headerlink" href="#module-NetworkManager" title="Permalink to this headline">¶</a></h2>
+<p>All the code is contained in one module: <a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9.x)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a>. Using it is as
+simple as you think it is:</p>
+<div class="highlight-py"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">NetworkManager</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">Version</span>
+<span class="go">&#39;0.9.6.0&#39;</span>
+</pre></div>
+</div>
+<p>NetworkManager exposes a lot of information via D-Bus and also allows full
+control of network settings. The full D-Bus API can be found on <a class="reference external" href="projects.gnome.org/NetworkManager/developers/api/09/spec.html">NetworkManager
+project website</a>. All interfaces listed there have been wrapped in classes as
+listed below. With a few exceptions, they behave exactly like the D-Bus
+methods. These exceptions are for convenience and limited to this list:</p>
+<ul class="simple">
+<li>IP addresses are returned as strings of the form <tt class="xref py py-data docutils literal"><span class="pre">1.2.3.4</span></tt> instead of
+network byte ordered integers.</li>
+<li>Route metrics are returned in host byte order, so you can use them as
+integers.</li>
+<li>Mac addresses and BSSIDs are always returned as strings of the form
+<tt class="xref py py-data docutils literal"><span class="pre">00:11:22:33:44:55</span></tt> instead of byte sequences.</li>
+<li>Wireless SSID&#8217;s are returned as strings instead of byte sequences. They will
+be decoded as UTF-8 data, so using any other encoding for your SSID will
+result in errors.</li>
+</ul>
+<dl class="class">
+<dt id="NetworkManager.NMDbusInterface">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">NMDbusInterface</tt><a class="headerlink" href="#NetworkManager.NMDbusInterface" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This is the base class for all interface wrappers. It adds a few useful
+features to standard D-Bus interfaces:</p>
+<ul class="simple">
+<li>All D-Bus properties are exposed as python properties</li>
+<li>Return values are automatically converted to python basic types (so no more
+<tt class="xref py py-data docutils literal"><span class="pre">dbus.String</span></tt>, but simple <tt class="xref py py-data docutils literal"><span class="pre">str</span></tt> (python 3) or <tt class="xref py py-data docutils literal"><span class="pre">unicode</span></tt>
+(python 2))</li>
+<li>Object paths in return values are automatically replaced with proxy objects,
+so you don&#8217;t need to do that manually</li>
+<li>...and vice versa when sending</li>
+<li>And also when receiving signals</li>
+</ul>
+<dl class="function">
+<dt id="NetworkManager.const">
+<tt class="descclassname">NetworkManager.</tt><tt class="descname">const</tt><big>(</big><em>prefix</em>, <em>value</em><big>)</big><a class="headerlink" href="#NetworkManager.const" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Many of NetworkManagers D-Bus methods expect or return numeric constants, for
+which there are enums in the C source code. These constants, such as
+<tt class="xref py py-data docutils literal"><span class="pre">NM_STATE_CONNECTED_GLOBAL</span></tt>, can all be found in the
+<a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9.x)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a> module as well. The <a class="reference internal" href="#NetworkManager.const" title="NetworkManager.const"><tt class="xref py py-func docutils literal"><span class="pre">const()</span></tt></a> function can help you
+translate them to text. For example:</p>
+<div class="highlight-py"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">const</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="go">&#39;connecting&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">const</span><span class="p">(</span><span class="s">&#39;device_type&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">&#39;wifi&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="list-of-classes">
+<h2>List of classes<a class="headerlink" href="#list-of-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="NetworkManager.NetworkManager">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">NetworkManager</tt><a class="headerlink" href="#NetworkManager.NetworkManager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This class represents the <tt class="xref py py-data docutils literal"><span class="pre">org.freedesktop.NetworkManager</span></tt> interface.
+Note that <a class="reference internal" href="#NetworkManager.NetworkManager" title="NetworkManager.NetworkManager"><tt class="xref py py-data docutils literal"><span class="pre">NetworkManager.NetworkManager</span></tt></a> actually is the singleton
+instance of this class.</p>
+<dl class="class">
+<dt id="NetworkManager.Settings">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Settings</tt><a class="headerlink" href="#NetworkManager.Settings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This class represents the <tt class="xref py py-data docutils literal"><span class="pre">org.freedesktop.NetworkManager.Settings</span></tt>
+interface.  Note that <a class="reference internal" href="#NetworkManager.Settings" title="NetworkManager.Settings"><tt class="xref py py-data docutils literal"><span class="pre">NetworkManager.Settings</span></tt></a> actually is the singleton
+instance of this class.</p>
+<dl class="class">
+<dt id="NetworkManager.Connection">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Connection</tt><a class="headerlink" href="#NetworkManager.Connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This class represents the
+<tt class="xref py py-data docutils literal"><span class="pre">org.freedesktop.NetworkManager.Settings.Connection</span></tt> interface.</p>
+<dl class="class">
+<dt id="NetworkManager.ActiveConnection">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">ActiveConnection</tt><a class="headerlink" href="#NetworkManager.ActiveConnection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This class represents the
+<tt class="xref py py-data docutils literal"><span class="pre">org.freedesktop.NetworkManager.Connection.Active</span></tt> interface.</p>
+<dl class="class">
+<dt id="NetworkManager.AccessPoint">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">AccessPoint</tt><a class="headerlink" href="#NetworkManager.AccessPoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This class represents the <tt class="xref py py-data docutils literal"><span class="pre">org.freedesktop.NetworkManager.AccessPoint</span></tt>
+interface.</p>
+<dl class="class">
+<dt id="NetworkManager.Device">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Device</tt><a class="headerlink" href="#NetworkManager.Device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Wired">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Wired</tt><a class="headerlink" href="#NetworkManager.Wired" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Wireless">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Wireless</tt><a class="headerlink" href="#NetworkManager.Wireless" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Modem">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Modem</tt><a class="headerlink" href="#NetworkManager.Modem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Bluetooth">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Bluetooth</tt><a class="headerlink" href="#NetworkManager.Bluetooth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.OlpcMesh">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">OlpcMesh</tt><a class="headerlink" href="#NetworkManager.OlpcMesh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Wimax">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Wimax</tt><a class="headerlink" href="#NetworkManager.Wimax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Infiniband">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Infiniband</tt><a class="headerlink" href="#NetworkManager.Infiniband" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Bond">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Bond</tt><a class="headerlink" href="#NetworkManager.Bond" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Bridge">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Bridge</tt><a class="headerlink" href="#NetworkManager.Bridge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Vlan">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Vlan</tt><a class="headerlink" href="#NetworkManager.Vlan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Adsl">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Adsl</tt><a class="headerlink" href="#NetworkManager.Adsl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>These classes represent D-Bus interfaces for various types of hardware. Note
+that methods such as <tt class="xref py py-data docutils literal"><span class="pre">NetworkManager.GetDevices()</span></tt> will only return
+<a class="reference internal" href="#NetworkManager.Device" title="NetworkManager.Device"><tt class="xref py py-class docutils literal"><span class="pre">Device</span></tt></a> instances. To get the hardware-specific class, you can call the
+<tt class="xref py py-func docutils literal"><span class="pre">Device.SpecificDevice()</span></tt> method.</p>
+<div class="highlight-py"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">dev</span><span class="o">.</span><span class="n">Interface</span><span class="p">,</span> <span class="n">dev</span><span class="o">.</span><span class="n">SpecificDevice</span><span class="p">()</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+<span class="gp">... </span> <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="n">NetworkManager</span><span class="o">.</span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">GetDevices</span><span class="p">()]</span>
+<span class="go">[(&#39;eth0&#39;, &#39;Wired&#39;), (&#39;wlan0&#39;, &#39;Wireless&#39;), (&#39;wwan0&#39;, &#39;Modem&#39;)]</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="NetworkManager.IP4Config">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">IP4Config</tt><a class="headerlink" href="#NetworkManager.IP4Config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.IP6Config">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">IP6Config</tt><a class="headerlink" href="#NetworkManager.IP6Config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.DHCP4Config">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">DHCP4Config</tt><a class="headerlink" href="#NetworkManager.DHCP4Config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.DHCP6Config">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">DHCP6Config</tt><a class="headerlink" href="#NetworkManager.DHCP6Config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>These classes represent the various IP configuration interfaces.</p>
+<dl class="class">
+<dt id="NetworkManager.AgentManager">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">AgentManager</tt><a class="headerlink" href="#NetworkManager.AgentManager" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.SecretAgent">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">SecretAgent</tt><a class="headerlink" href="#NetworkManager.SecretAgent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Classes that can be used to handle and store secrets. Note that these are not
+for querying NetworkManager&#8217;s exisiting secret stores. For that the
+<tt class="xref py py-func docutils literal"><span class="pre">GetSecrets()</span></tt> method of the <a class="reference internal" href="#NetworkManager.Connection" title="NetworkManager.Connection"><tt class="xref py py-class docutils literal"><span class="pre">Connection</span></tt></a> class can be used.</p>
+<dl class="class">
+<dt id="NetworkManager.VPNConnection">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">VPNConnection</tt><a class="headerlink" href="#NetworkManager.VPNConnection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>This class represents the <tt class="xref py py-data docutils literal"><span class="pre">org.freedesktop.NetworkManager.VPN.Connection</span></tt>
+interface.</p>
+<dl class="class">
+<dt id="NetworkManager.VPNPlugin">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">VPNPlugin</tt><a class="headerlink" href="#NetworkManager.VPNPlugin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>A class that can be used to query VPN plugins.</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+</div>
+<div class="section" id="the-n-m-utility">
+<h2>The n-m utility<a class="headerlink" href="#the-n-m-utility" title="Permalink to this headline">¶</a></h2>
+<p>n-m is a command-line tool to interact with NetworkManager. With it, you can
+inspect various configuration items and (de-)activate connections.</p>
+<blockquote>
+<div><p>Usage: [options] action [arguments]</p>
+<dl class="docutils">
+<dt>Actions:</dt>
+<dd><p class="first">list       - List all defined and active connections
+activate   - Activate a connection
+deactivate - Deactivate a connection
+offline    - Deactivate all connections
+enable     - Enable specific connection types
+disable    - Disable specific connection types
+info       - Information about a connection
+dump       - Dump a python hash of connection information, suitable for</p>
+<blockquote class="last">
+<div>creating new connections</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Python API to talk to NetworkManager</a><ul>
+<li><a class="reference internal" href="#module-NetworkManager">The <tt class="docutils literal"><span class="pre">NetworkManager</span></tt> module</a></li>
+<li><a class="reference internal" href="#list-of-classes">List of classes</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-n-m-utility">The n-m utility</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">python-networkmanager 0.9.11 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011-2013, Dennis Kaarsemaker.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
