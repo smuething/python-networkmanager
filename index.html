@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Python API to talk to NetworkManager &mdash; python-networkmanager 0.9.13 documentation</title>
+    <title>Python API to talk to NetworkManager &mdash; python-networkmanager 1.0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9.13',
+        VERSION:     '1.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-networkmanager 0.9.13 documentation" href="#" /> 
+    <link rel="top" title="python-networkmanager 1.0.1 documentation" href="#" /> 
   </head>
   <body>
     <div class="related">
@@ -35,7 +35,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="#">python-networkmanager 0.9.13 documentation</a> &raquo;</li> 
+        <li><a href="#">python-networkmanager 1.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -55,12 +55,12 @@ classes and D-Bus properties in python properties. It also provides a
 command-line utility to inspect the configuration and (de-)activate
 connections.</p>
 <div class="section" id="module-NetworkManager">
-<span id="the-networkmanager-module"></span><h2>The <a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9.x)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a> module<a class="headerlink" href="#module-NetworkManager" title="Permalink to this headline">¶</a></h2>
-<p>All the code is contained in one module: <a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9.x)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a>. Using it is as
+<span id="the-networkmanager-module"></span><h2>The <a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9 and 1.0)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a> module<a class="headerlink" href="#module-NetworkManager" title="Permalink to this headline">¶</a></h2>
+<p>All the code is contained in one module: <a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9 and 1.0)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a>. Using it is as
 simple as you think it is:</p>
 <div class="highlight-py"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">NetworkManager</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">Version</span>
-<span class="go">&#39;0.9.6.0&#39;</span>
+<span class="go">&#39;1.0.4&#39;</span>
 </pre></div>
 </div>
 <p>NetworkManager exposes a lot of information via D-Bus and also allows full
@@ -104,7 +104,7 @@ so you don&#8217;t need to do that manually</li>
 <p>Many of NetworkManagers D-Bus methods expect or return numeric constants, for
 which there are enums in the C source code. These constants, such as
 <tt class="xref py py-data docutils literal"><span class="pre">NM_STATE_CONNECTED_GLOBAL</span></tt>, can all be found in the
-<a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9.x)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a> module as well. The <a class="reference internal" href="#NetworkManager.const" title="NetworkManager.const"><tt class="xref py py-func docutils literal"><span class="pre">const()</span></tt></a> function can help you
+<a class="reference internal" href="#module-NetworkManager" title="NetworkManager: Talk to NetworkManager from python (Linux systems with NetworkManager 0.9 and 1.0)"><tt class="xref py py-mod docutils literal"><span class="pre">NetworkManager</span></tt></a> module as well. The <a class="reference internal" href="#NetworkManager.const" title="NetworkManager.const"><tt class="xref py py-func docutils literal"><span class="pre">const()</span></tt></a> function can help you
 translate them to text. For example:</p>
 <div class="highlight-py"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">NetworkManager</span><span class="o">.</span><span class="n">const</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
 <span class="go">&#39;connecting&#39;</span>
@@ -210,6 +210,11 @@ interface.</p>
 <dl class="class">
 <dt id="NetworkManager.Adsl">
 <em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Adsl</tt><a class="headerlink" href="#NetworkManager.Adsl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="NetworkManager.Generic">
+<em class="property">class </em><tt class="descclassname">NetworkManager.</tt><tt class="descname">Generic</tt><a class="headerlink" href="#NetworkManager.Generic" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>These classes represent D-Bus interfaces for various types of hardware. Note
@@ -344,7 +349,7 @@ dump       - Dump a python hash of connection information, suitable for</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="#">python-networkmanager 0.9.13 documentation</a> &raquo;</li> 
+        <li><a href="#">python-networkmanager 1.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
