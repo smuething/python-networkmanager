@@ -295,6 +295,9 @@ class Settings(NMDbusInterface):
 class AgentManager(NMDbusInterface):
     object_path = '/org/freedesktop/NetworkManager/AgentManager'
 
+class Checkpoint(TransientNMDbusInterface):
+    pass
+
 class Connection(NMDbusInterface):
     interface_names = ['org.freedesktop.NetworkManager.Settings.Connection']
     has_secrets = ['802-1x', '802-11-wireless-security', 'cdma', 'gsm', 'pppoe', 'vpn']
