@@ -507,6 +507,8 @@ class fixups(object):
                 if 'route-data' in settings['ipv4']:
                     for item in settings['ipv4']['route-data']:
                         item['prefix'] = dbus.UInt32(item['prefix'])
+                        if 'table' in item:
+                            item['table'] = dbus.UInt32(item['table'])
                     settings['ipv4']['route-data'] = dbus.Array(
                         settings['ipv4']['route-data'],
                         signature=dbus.Signature('a{sv}'))
