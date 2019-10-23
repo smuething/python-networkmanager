@@ -510,6 +510,16 @@ class fixups(object):
                     settings['ipv4']['route-data'] = dbus.Array(
                         settings['ipv4']['route-data'],
                         signature=dbus.Signature('a{sv}'))
+                if 'routing-rules' in settings['ipv4']:
+                    for item in settings['ipv4']['routing-rules']:
+                        item['priority'] = dbus.UInt32(item['priority'])
+                        item['from-len'] = dbus.Byte(item.get('from-len',32))
+                        if 'family' in item:
+                            item['family'] = dbus.Int32(item['family'])
+                        item['table'] = dbus.UInt32(item['table'])
+                    settings['ipv4']['routing-rules'] = dbus.Array(
+                        settings['ipv4']['routing-rules'],
+                        signature=dbus.Signature('a{sv}'))
                 if 'addresses' in settings['ipv4']:
                     settings['ipv4']['addresses'] = [fixups.addrconf_to_dbus(addr,socket.AF_INET) for addr in settings['ipv4']['addresses']]
                 if 'routes' in settings['ipv4']:
@@ -528,6 +538,16 @@ class fixups(object):
                         item['prefix'] = dbus.UInt32(item['prefix'])
                     settings['ipv6']['route-data'] = dbus.Array(
                         settings['ipv6']['route-data'],
+                        signature=dbus.Signature('a{sv}'))
+                if 'routing-rules' in settings['ipv6']:
+                    for item in settings['ipv6']['routing-rules']:
+                        item['priority'] = dbus.UInt32(item['priority'])
+                        item['from-len'] = dbus.Byte(item.get('from-len',64))
+                        if 'family' in item:
+                            item['family'] = dbus.Int32(item['family'])
+                        item['table'] = dbus.UInt32(item['table'])
+                    settings['ipv6']['routing-rules'] = dbus.Array(
+                        settings['ipv6']['routing-rules'],
                         signature=dbus.Signature('a{sv}'))
                 if 'addresses' in settings['ipv6']:
                     settings['ipv6']['addresses'] = [fixups.addrconf_to_dbus(addr,socket.AF_INET6) for addr in settings['ipv6']['addresses']]
