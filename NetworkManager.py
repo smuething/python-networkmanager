@@ -547,9 +547,7 @@ class fixups(object):
                     for item in settings['ipv6']['routing-rules']:
                         item['priority'] = dbus.UInt32(item['priority'])
                         item['from-len'] = dbus.Byte(item.get('from-len',64))
-                        # FIXME: Add default family
-                        if 'family' in item:
-                            item['family'] = dbus.Int32(item['family'])
+                        item['family'] = dbus.Int32(item.get('family',10))
                         item['table'] = dbus.UInt32(item['table'])
                     settings['ipv6']['routing-rules'] = dbus.Array(
                         settings['ipv6']['routing-rules'],
