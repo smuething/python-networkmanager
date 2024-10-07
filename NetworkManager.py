@@ -630,10 +630,10 @@ class fixups(object):
                 val['ipv4']['addresses'] = [fixups.addrconf_to_python(addr,socket.AF_INET) for addr in val['ipv4']['addresses']]
                 val['ipv4']['routes'] = [fixups.route_to_python(route,socket.AF_INET) for route in val['ipv4']['routes']]
                 val['ipv4']['dns'] = [fixups.addr_to_python(addr,socket.AF_INET) for addr in val['ipv4']['dns']]
-            if 'ipv6' in val:
-                val['ipv6']['addresses'] = [fixups.addrconf_to_python(addr,socket.AF_INET6) for addr in val['ipv6']['addresses']]
-                val['ipv6']['routes'] = [fixups.route_to_python(route,socket.AF_INET6) for route in val['ipv6']['routes']]
-                val['ipv6']['dns'] = [fixups.addr_to_python(addr,socket.AF_INET6) for addr in val['ipv6']['dns']]
+            # if 'ipv6' in val:
+            #     val['ipv6']['addresses'] = [fixups.addrconf_to_python(addr,socket.AF_INET6) for addr in val['ipv6']['addresses']]
+            #     val['ipv6']['routes'] = [fixups.route_to_python(route,socket.AF_INET6) for route in val['ipv6']['routes']]
+            #     val['ipv6']['dns'] = [fixups.addr_to_python(addr,socket.AF_INET6) for addr in val['ipv6']['dns']]
             return val
         if method == 'PropertiesChanged':
             for prop in val:
